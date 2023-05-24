@@ -1,20 +1,4 @@
-/.idea/Assignment 2.iml
-/.idea/modules.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
-Client/.idea/vcs.xml
-Server/.vs/Server/FileContentIndex/702e84fa-d641-4ffd-b0ba-f63cbadbeba6.vsidx
-Server/.vs/Server/FileContentIndex/ba133b4f-3709-4cb6-8101-9bcd55d14fe9.vsidx
-Server/.vs/Server/FileContentIndex/e270aa23-3071-4202-a31d-9a1d9f53640b.vsidx
-Server/.vs/Server/v17/.suo
-Server/bin/Debug/net7.0/Server.dll
-Server/bin/Debug/net7.0/Server.pdb
-Server/obj/Debug/net7.0/Server.assets.cache
-Server/obj/Debug/net7.0/Server.csproj.FileListAbsolute.txt
-Server/obj/Debug/net7.0/Server.dll
-Server/obj/Debug/net7.0/Server.GeneratedMSBuildEditorConfig.editorconfig
-Server/obj/Debug/net7.0/Server.genruntimeconfig.cache
-Server/obj/Debug/net7.0/Server.pdb
-Server/obj/project.assets.json
-Server/obj/project.nuget.cache
-Server/obj/Server.csproj.nuget.dgspec.json
+Client/.idea
+Server/.vs
+Server/bin
+Server/obj
