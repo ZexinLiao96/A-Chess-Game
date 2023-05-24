@@ -168,7 +168,7 @@ namespace GameServer
             }
 
             SendGameRecord(client, game);
-            Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for /pairme?player={username}");
+            Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for {endpoint}");
         }
 
         private void HandleMyMove(Socket client, string endpoint)
@@ -216,6 +216,7 @@ namespace GameServer
 
             // Send the response to the client
             client.Send(Encoding.ASCII.GetBytes(responseHeader));
+            Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for {endpoint}");
         }
 
         private void HandleTheirMove(Socket client, string endpoint)
@@ -266,6 +267,7 @@ namespace GameServer
 
             client.Send(Encoding.ASCII.GetBytes(responseHeader));
             client.Send(Encoding.ASCII.GetBytes(responseBody));
+            Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for {endpoint}");
 
             if (game.Player1 == username)
             {
