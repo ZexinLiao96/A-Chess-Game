@@ -53,6 +53,7 @@ async function findMatch() {
     const signal = document.querySelector("#signal");
     const status = document.querySelector("#status");
     status.innerHTML = 'Pairing, please wait...';
+
     //try to pair every 1 sec.
     const intervalId = setInterval(async () => {
         try {
@@ -64,6 +65,7 @@ async function findMatch() {
             if (data.gameState === 'progress') {
                 clearInterval(intervalId);
                 gameId = data.gameID;
+
                 if (username === data.player1) {
                     side = "white";
                     myTurn = true;
@@ -104,6 +106,7 @@ function prepareGame() {
 
 function clickPiece(pieceType, event) {
     if (myTurn) {
+        //allow switching target before make move
         checkTarget(event);
 
         // Select the new piece
@@ -137,6 +140,7 @@ function checkTarget(event) {
 
 function getAllowedCells(pieceType, cellColumn, cellRow) {
     let allowedCells = [];
+
     switch (pieceType) {
         case 'pawn': {
             // Calculate the id of the cells in front of the pawn
@@ -312,29 +316,30 @@ function getAllowedCells(pieceType, cellColumn, cellRow) {
         }
             break;
     }
+
     return allowedCells;
 }
 
 async function movePiece(event) {
-    const targetCell = event.currentTarget;
-    const targetCellId = targetCell.id;
-    const targetCellColumn = targetCellId[0];
-    const targetCellRow = parseInt(targetCellId[1]);
-
     const selectedCell = selectedPiece.parentElement;
     const selectedCellId = selectedCell.id;
     const selectedCellColumn = selectedCellId[0];
     const selectedCellRow = parseInt(selectedCellId[1]);
+
+    const targetCell = event.currentTarget;
+    const targetCellId = targetCell.id;
+    const targetCellColumn = targetCellId[0];
+    const targetCellRow = parseInt(targetCellId[1]);
 
     // If the cell contains an enemy piece, remove it
     if (targetCell.childElementCount === 1) {
         targetCell.removeChild(targetCell.children[0]);
     }
 
-    // Move the pawn to the new cell
+    // Move the piece to the new cell
     targetCell.appendChild(selectedPiece);
 
-    // Deselect the pawn and un-highlight the cells
+    // Deselect the piece and un-highlight the allowed cells
     selectedPiece.style.boxShadow = '';
     selectedPiece = null;
 
@@ -370,14 +375,12 @@ function pollForTheirMove(username, gameId) {
         if (theirMove) {
             clearInterval(intervalId);
             const {from, to} = theirMove;
-            console.log(from)
-            console.log(to)
-            const piece = document.getElementById(from).children[0];
-            const targetCell = document.getElementById(to);
-            if (targetCell.childElementCount === 1) {
-                targetCell.removeChild(targetCell.children[0]);
+            const pieceMoved = document.getElementById(from).children[0];
+            const cellToGo = document.getElementById(to);
+            if (cellToGo.childElementCount === 1) {
+                cellToGo.removeChild(cellToGo.children[0]);
             }
-            targetCell.appendChild(piece);
+            cellToGo.appendChild(pieceMoved);
 
             myTurn = true;
             const signal = document.querySelector("#signal");

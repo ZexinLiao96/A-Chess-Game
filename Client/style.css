@@ -11,29 +11,29 @@ body {
     grid-area: s;
     background-color: #7c6b54;
     box-sizing: border-box;
-    width: 250px;
-    height: 100%;
-    padding: 20px;
-    border-radius: 0 20px 20px 0;
+    width: 20rem;
+    height: 100vh;
+    padding: 2rem;
+    border-radius: 0 2rem 2rem 0;
     display: flex;
     flex-direction: column;
 }
 
 #welcomeText {
-    margin-top: 100px;
+    margin-top: 5rem;
     font-family: "Agency FB", serif;
     font-size: xxx-large;
 }
 
 #usernameContainer {
-    margin-top: 10px;
-    height: 30px;
-    border-radius: 20px;
+    margin-top: 1rem;
+    height: 3rem;
+    border-radius: 2rem;
     text-align: center;
 }
 
 #status {
-    height: 100px;
+    height: 5rem;
 }
 
 #buttons {
@@ -43,10 +43,10 @@ body {
 }
 
 #buttons button {
-    width: 150px;
-    height: 30px;
-    margin: 5px;
-    border-radius: 5px;
+    width: 10rem;
+    height: 3rem;
+    margin: 1rem;
+    border-radius: 1rem;
 }
 
 #findMatchButton {
@@ -67,11 +67,11 @@ body {
 }
 
 #signal {
-    height: 50px;
-    width: 400px;
+    height: 4rem;
+    width: 20rem;
     background-color: white;
-    border-radius: 50px;
-    margin: 30px 0;
+    border-radius: 5rem;
+    margin: 3rem 0 1rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -79,17 +79,15 @@ body {
 }
 
 #chessboard {
-    width: 480px;
-    height: 480px;
+    width: 32rem;
+    height: 32rem;
     border-collapse: collapse;
 }
 
 #chessboard td {
-    width: 60px;
-    height: 60px;
+    width: 4rem;
+    height: 4rem;
     border: 1px solid black;
-    align-items: center;
-    justify-content: center;
 }
 
 #chessboard tr:nth-child(even) td:nth-child(odd),
@@ -103,7 +101,7 @@ body {
 }
 
 #chessboard img {
-    width: 40px;
-    height: 40px;
-    margin: 10px;
+    width: 3.2rem;
+    height: 3.2rem;
+    margin: 0.4rem;
 }
