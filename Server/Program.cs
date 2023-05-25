@@ -66,8 +66,28 @@ namespace GameServer
                 }
 
                 var requestLine = messageReceived.Split("\r\n")[0];
-                var method = requestLine.Split(" ")[0];
-                var endpoint = requestLine.Split(" ")[1];
+                if (requestLine == "")
+                {
+                    var messageToSend = "HTTP/1.1 400 Empty Request\r\n\r\n";
+                    var messageBytes = Encoding.ASCII.GetBytes(messageToSend);
+                    client.Send(messageBytes);
+                    continue;
+                }
+
+                string method;
+                string endpoint;
+                try
+                {
+                    method = requestLine.Split(" ")[0];
+                    endpoint = requestLine.Split(" ")[1];
+                }
+                catch
+                {
+                    var messageToSend = "HTTP/1.1 400 Invalid Request\r\n\r\n";
+                    var messageBytes = Encoding.ASCII.GetBytes(messageToSend);
+                    client.Send(messageBytes);
+                    continue;
+                }
 
                 if (method == "GET")
                 {
@@ -91,6 +111,18 @@ namespace GameServer
                     {
                         Quit(client, endpoint);
                     }
+                    else
+                    {
+                        var messageToSend = "HTTP/1.1 400 Invalid Endpoint\r\n\r\n";
+                        var messageBytes = Encoding.ASCII.GetBytes(messageToSend);
+                        client.Send(messageBytes);
+                    }
+                }
+                else
+                {
+                    var messageToSend = "HTTP/1.1 400 Invalid Method\r\n\r\n";
+                    var messageBytes = Encoding.ASCII.GetBytes(messageToSend);
+                    client.Send(messageBytes);
                 }
             }
         }
@@ -98,7 +130,7 @@ namespace GameServer
         private void RegisterPlayer(Socket client)
         {
             var username = GenerateUniqueUsername();
-            players[username] = username;
+            players[username] = Thread.CurrentThread.Name;
 
             var responseBody = Encoding.ASCII.GetBytes(username);
             string responseHeader = $"HTTP/1.1 200 OK\r\nConnection: keep-alive\r\n" +
@@ -228,12 +260,16 @@ namespace GameServer
             string responseHeader;
             string responseBody = "";
 
-            Game game;
+            Game game = null;
 
-            if (!players.ContainsKey(username) || !activeGames.ContainsKey(gameId))
+            if (!players.ContainsKey(username))
             {
                 responseHeader = GenerateResponseHeader("400 Bad Request", 0);
-                return;
+            }
+            else if (!activeGames.ContainsKey(gameId))
+            {
+                responseBody = "You Win";
+                responseHeader = GenerateResponseHeader("200 OK", responseBody.Length);
             }
             else
             {
@@ -269,13 +305,16 @@ namespace GameServer
             client.Send(Encoding.ASCII.GetBytes(responseBody));
             Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for {endpoint}");
 
-            if (game.Player1 == username)
+            if (game != null)
             {
-                game.Player1LastMove = null;
-            }
-            else
-            {
-                game.Player2LastMove = null;
+                if (game.Player1 == username)
+                {
+                    game.Player1LastMove = null;
+                }
+                else
+                {
+                    game.Player2LastMove = null;
+                }
             }
         }
 
@@ -302,6 +341,7 @@ namespace GameServer
                     if (activeGames.TryRemove(gameId, out _))
                     {
                         responseHeader = GenerateResponseHeader("200 OK", 0);
+                        Console.WriteLine($"Thread {Thread.CurrentThread.Name} closing connection with {client.RemoteEndPoint} and terminating");
                     }
                     else
                     {
@@ -334,7 +374,7 @@ namespace GameServer
 
                 username = stringBuilder.ToString();
             }
-            while (!players.TryAdd(username, username)); // keep generating until we get a unique username
+            while (!players.TryAdd(username, Thread.CurrentThread.Name)); // keep generating until we get a unique username
 
             return username;
         }

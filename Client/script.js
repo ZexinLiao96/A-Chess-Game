@@ -4,6 +4,7 @@ let side;
 let myTurn;
 let selectedPiece = null;
 let highlightedCells = [];
+let gameProceeding = false;
 
 window.addEventListener("load", function () {
     const findMatchButton = document.querySelector("#findMatchButton");
@@ -63,6 +64,7 @@ async function findMatch() {
             const data = await response.json();
 
             if (data.gameState === 'progress') {
+                gameProceeding = true;
                 clearInterval(intervalId);
                 gameId = data.gameID;
 
@@ -371,21 +373,33 @@ async function sendMyMove(username, gameId, move) {
 
 function pollForTheirMove(username, gameId) {
     const intervalId = setInterval(async () => {
-        const theirMove = await getTheirMove(username, gameId);
-        if (theirMove) {
+        if (gameProceeding === false) {
             clearInterval(intervalId);
-            const {from, to} = theirMove;
-            const pieceMoved = document.getElementById(from).children[0];
-            const cellToGo = document.getElementById(to);
-            if (cellToGo.childElementCount === 1) {
-                cellToGo.removeChild(cellToGo.children[0]);
-            }
-            cellToGo.appendChild(pieceMoved);
+            return;
+        }
+        const theirMove = await getTheirMove(username, gameId);
+        console.log(theirMove);
+        if (theirMove) {
+            if (theirMove !== "terminate") {
+                clearInterval(intervalId);
+                const {from, to} = theirMove;
+                const pieceMoved = document.getElementById(from).children[0];
+                const cellToGo = document.getElementById(to);
+                if (cellToGo.childElementCount === 1) {
+                    cellToGo.removeChild(cellToGo.children[0]);
+                }
+                cellToGo.appendChild(pieceMoved);
 
-            myTurn = true;
-            const signal = document.querySelector("#signal");
-            signal.innerHTML = 'Your Turn';
-            signal.style.backgroundColor = 'green';
+                myTurn = true;
+                const signal = document.querySelector("#signal");
+                signal.innerHTML = 'Your Turn';
+                signal.style.backgroundColor = 'green';
+            } else {
+                clearInterval(intervalId);
+                const signal = document.querySelector("#signal");
+                signal.innerHTML = 'You Win!';
+                signal.style.backgroundColor = 'yellow';
+            }
         }
     }, 1000);
 }
@@ -396,9 +410,12 @@ async function getTheirMove(username, gameId) {
             method: 'GET',
         });
         const data = await response.text();
+        console.log("data: " + data);
         if (data.length === 0) {
             console.log("Opponent has not moved yet");
             return null;
+        } else if (data === "You Win") {
+            return "terminate";
         } else {
             const [from, to] = data.split('-');
             return {from, to};
@@ -416,6 +433,11 @@ async function quitGame() {
         // check if response status is not OK
         if (!response.ok) {
             window.alert(response.status);
+        } else {
+            gameProceeding = false;
+            const signal = document.querySelector("#signal");
+            signal.innerHTML = 'You Loose!';
+            signal.style.backgroundColor = 'white';
         }
     } catch (error) {
         throw error;
