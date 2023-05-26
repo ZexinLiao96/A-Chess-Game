@@ -5,6 +5,7 @@ let myTurn;
 let selectedPiece = null;
 let highlightedCells = [];
 let gameProceeding = false;
+let lastOpponentMove = null;
 
 window.addEventListener("load", function () {
     const findMatchButton = document.querySelector("#findMatchButton");
@@ -378,7 +379,6 @@ function pollForTheirMove(username, gameId) {
             return;
         }
         const theirMove = await getTheirMove(username, gameId);
-        console.log(theirMove);
         if (theirMove) {
             if (theirMove !== "terminate") {
                 clearInterval(intervalId);
@@ -410,13 +410,13 @@ async function getTheirMove(username, gameId) {
             method: 'GET',
         });
         const data = await response.text();
-        console.log("data: " + data);
-        if (data.length === 0) {
-            console.log("Opponent has not moved yet");
+        if (data.length === 0 || data === lastOpponentMove) {
+            console.log("Opponent has not moved since last move");
             return null;
         } else if (data === "You Win") {
             return "terminate";
         } else {
+            lastOpponentMove = data;
             const [from, to] = data.split('-');
             return {from, to};
         }

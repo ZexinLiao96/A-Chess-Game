@@ -284,38 +284,28 @@ namespace GameServer
                 }
                 else
                 {
-                    // Check if either player hasn't moved yet.
-                    if ((game.Player1 == username && game.Player2LastMove == null) ||
-                        (game.Player2 == username && game.Player1LastMove == null))
+                    // Otherwise, return the opponent's last move.
+                    responseBody = game.Player1 == username ? game.Player2LastMove : game.Player1LastMove;
+                    //}
+                    if (responseBody != null)
                     {
-                        // In this case, just set responseBody to an empty string.
-                        responseBody = "";
+                        responseHeader = GenerateResponseHeader("200 OK", responseBody.Length);
+                        client.Send(Encoding.ASCII.GetBytes(responseHeader));
+                        client.Send(Encoding.ASCII.GetBytes(responseBody));
+                        return;
                     }
                     else
                     {
-                        // Otherwise, return the opponent's last move.
-                        responseBody = game.Player1 == username ? game.Player2LastMove : game.Player1LastMove;
+                        responseHeader = GenerateResponseHeader("200 OK", 0);
+                        client.Send(Encoding.ASCII.GetBytes(responseHeader));
+                        return;
                     }
-
-                    responseHeader = GenerateResponseHeader("200 OK", responseBody.Length);
                 }
             }
 
             client.Send(Encoding.ASCII.GetBytes(responseHeader));
             client.Send(Encoding.ASCII.GetBytes(responseBody));
             Console.WriteLine($"Thread {Thread.CurrentThread.Name} sent response to {client.RemoteEndPoint} for {endpoint}");
-
-            if (game != null)
-            {
-                if (game.Player1 == username)
-                {
-                    game.Player1LastMove = null;
-                }
-                else
-                {
-                    game.Player2LastMove = null;
-                }
-            }
         }
 
         private void Quit(Socket client, string endpoint)
