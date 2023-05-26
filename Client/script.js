@@ -436,7 +436,7 @@ async function quitGame() {
         } else {
             gameProceeding = false;
             const signal = document.querySelector("#signal");
-            signal.innerHTML = 'You Loose!';
+            signal.innerHTML = 'You Lose!';
             signal.style.backgroundColor = 'white';
         }
     } catch (error) {
